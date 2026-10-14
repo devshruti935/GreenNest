@@ -22,7 +22,7 @@ function App() {
         <CartProvider>
           <Navbar />
           <Routes>
-            <Route path="/" element={<Hero />} />
+            <Route path="/" element={<Login />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/rewards" element={<Rewards />} />
             <Route path="/recycling" element={<Recycling />} />
