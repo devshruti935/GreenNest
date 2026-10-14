@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
+import { useAuth } from './AuthContext';
 
 export interface CartItem {
   id: number;
@@ -32,13 +33,18 @@ const parsePrice = (price: string): number => {
 };
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const { isLoggedIn } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
 
   const addToCart = (item: Omit<CartItem, 'quantity'>) => {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+    if (!isLoggedIn) {
+      alert('Please log in before adding items to the cart');
+      return;
+    }
+    setItems(prev => {
+      const existing = prev.find(i => i.id === item.id);
       if (existing) {
-        return prev.map((i) =>
+        return prev.map(i =>
           i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
@@ -47,7 +53,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (id: number) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
+    setItems(prev => prev.filter(i => i.id !== id));
   };
 
   const updateQuantity = (id: number, quantity: number) => {
@@ -55,8 +61,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       removeFromCart(id);
       return;
     }
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity } : i))
+    setItems(prev =>
+      prev.map(i => (i.id === id ? { ...i, quantity } : i))
     );
   };
 

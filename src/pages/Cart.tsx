@@ -75,9 +75,9 @@ const Cart = () => {
               <span style={{ fontSize: '0.85rem', color: '#6b8f7e' }}>🌱 Points you'll earn</span>
               <span style={{ color: '#f4a261', fontWeight: 600 }}>+{Math.round(totalPrice * 0.95 / 10)}</span>
             </div>
-            <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1.5rem' }}>
+            <Link to="/checkout" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1.5rem', textAlign: 'center', textDecoration: 'none' }}>
               Proceed to Checkout
-            </button>
+            </Link>
             <button
               onClick={clearCart}
               style={{ width: '100%', marginTop: '0.75rem', padding: '0.6rem', background: 'none', border: '1px solid rgba(82,183,136,0.15)', borderRadius: '10px', color: '#6b8f7e', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '0.9rem' }}
