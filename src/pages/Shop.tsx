@@ -21,6 +21,10 @@ import stainlessSteelWaterBottle from '../assets/products/stainless-steel-water-
 import bambooStrawSet from '../assets/products/bamboo-straw-set.png';
 import bambooSoapDish from '../assets/products/bamboo-soap-dish.png';
 import organicCottonProduceBags from '../assets/products/organic-cotton-produce-bags.png';
+import bambooCoconutShowpiece from '../assets/products/bamboo-coconut-showpiece.png';
+import recycledPaperYearPlanner from '../assets/products/recycled-paper-year-planner.png';
+import coconutShellPlanter from '../assets/products/coconut-shell-planter.png';
+import greenNestCottonTote from '../assets/products/greennest-cotton-tote.png';
 
 export const products = [
   // ── Coconut Shell Products ──
@@ -68,7 +72,7 @@ export const products = [
     price: '₹749',
     image: bambooDeskOrganizer,
     badge: 'New',
-    category: 'Office',
+    category: 'Home Decor',
   },
   // ── Jute & Fabric ──
   {
@@ -105,6 +109,42 @@ export const products = [
     price: '₹449',
     image: organicCottonProduceBags,
     badge: 'Reusable',
+    category: 'Kitchen',
+  },
+  {
+    id: 23,
+    name: 'Bamboo & Coconut Shell Showpiece',
+    desc: 'Handcrafted bamboo and coconut shell table decor, made with natural materials.',
+    price: '₹899',
+    image: bambooCoconutShowpiece,
+    badge: 'Handcrafted',
+    category: 'Home Decor',
+  },
+  {
+    id: 24,
+    name: 'Recycled Paper Year Planner',
+    desc: 'A reusable year-at-a-glance planner printed on responsibly recycled paper.',
+    price: '₹499',
+    image: recycledPaperYearPlanner,
+    badge: 'Recycled',
+    category: 'Stationery',
+  },
+  {
+    id: 25,
+    name: 'Coconut Shell Planter',
+    desc: 'A polished coconut shell planter that gives natural materials a second life.',
+    price: '₹549',
+    image: coconutShellPlanter,
+    badge: 'Natural',
+    category: 'Home Decor',
+  },
+  {
+    id: 26,
+    name: 'GreenNest Organic Cotton Tote',
+    desc: 'A reusable cotton tote featuring the GreenNest logo, made for everyday errands.',
+    price: '₹399',
+    image: greenNestCottonTote,
+    badge: 'GreenNest',
     category: 'Bags',
   },
   // ── Beeswax & Natural ──
