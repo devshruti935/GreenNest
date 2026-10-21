@@ -22,12 +22,6 @@ const Profile = () => {
     );
   }
 
-  const orders = [
-    { id: 'GN-2024-001', date: 'Oct 12, 2024', items: 3, total: '₹1,747', status: 'Delivered' },
-    { id: 'GN-2024-002', date: 'Oct 8, 2024', items: 1, total: '₹499', status: 'Shipped' },
-    { id: 'GN-2024-003', date: 'Sep 29, 2024', items: 5, total: '₹3,096', status: 'Delivered' },
-  ];
-
   const activities = [
     { icon: '♻️', text: 'Recycled 2.5kg of plastic bottles', points: '+125', date: 'Oct 10' },
     { icon: '🛒', text: 'Purchased Bamboo Cutlery Kit', points: '+50', date: 'Oct 8' },
@@ -54,7 +48,7 @@ const Profile = () => {
               <div className="stat-label">GreenPoints</div>
             </div>
             <div className="profile-stat">
-              <div className="stat-number" style={{ fontSize: '2rem' }}>3</div>
+              <div className="stat-number" style={{ fontSize: '2rem' }}>{user.orders.length}</div>
               <div className="stat-label">Orders</div>
             </div>
             <div className="profile-stat">
@@ -70,7 +64,7 @@ const Profile = () => {
         <div className="profile-section">
           <h3 style={{ marginBottom: '1rem', fontSize: '1.15rem' }}>📦 Recent Orders</h3>
           <div className="order-list">
-            {orders.map((order) => (
+            {user.orders.map((order) => (
               <div className="order-item" key={order.id}>
                 <div>
                   <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{order.id}</div>
@@ -82,6 +76,9 @@ const Profile = () => {
                 </div>
               </div>
             ))}
+            {user.orders.length === 0 && (
+              <p style={{ color: '#6b8f7e' }}>Your orders will appear here after checkout.</p>
+            )}
           </div>
         </div>
 

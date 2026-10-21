@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const rewards = [
   { icon: '🎋', name: '10% Off Next Order', cost: '200 pts', desc: 'Save on your next eco-purchase.' },
@@ -17,18 +19,24 @@ const earnMethods = [
 ];
 
 const Rewards = () => {
-  const [points, setPoints] = useState(1250);
+  const { user, redeemPoints } = useAuth();
+  const points = user?.points ?? 0;
   const [redeemed, setRedeemed] = useState<string | null>(null);
 
   const redeem = (name: string, cost: string) => {
     const requiredPoints = Number(cost.replace(/[^0-9]/g, ''));
+
+    if (!user) {
+      setRedeemed('Sign in to redeem GreenPoints.');
+      return;
+    }
 
     if (points < requiredPoints) {
       setRedeemed(`You need ${requiredPoints - points} more GreenPoints for ${name}.`);
       return;
     }
 
-    setPoints((current) => current - requiredPoints);
+    redeemPoints(requiredPoints);
     setRedeemed(`${name} redeemed successfully!`);
   };
 
@@ -45,6 +53,11 @@ const Rewards = () => {
             <div className="points-label">GreenPoints<br />available to redeem</div>
           </div>
         </div>
+        {!user && (
+          <p className="rewards-sign-in-note">
+            <Link to="/login">Sign in</Link> to see and redeem your GreenPoints.
+          </p>
+        )}
       </div>
 
       {/* How to earn */}

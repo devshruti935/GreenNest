@@ -36,7 +36,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="footer-bottom">
-        © 2024 <span className="brand-word">GreenNest</span>. All rights reserved. Made with 💚 for the planet.
+        © {new Date().getFullYear()} <span className="brand-word">GreenNest</span>. All rights reserved. Made with 💚 for the planet.
       </div>
     </footer>
   );

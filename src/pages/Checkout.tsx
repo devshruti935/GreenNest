@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
-  const { user, addPoints } = useAuth();
+  const { user, addPoints, addOrder } = useAuth();
   const navigate = useNavigate();
 
   const [address, setAddress] = useState('');
@@ -49,6 +49,13 @@ const Checkout = () => {
     // Generate a random order ID
     const id = 'GN-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
     setOrderId(id);
+    addOrder({
+      id,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      items: items.reduce((count, item) => count + item.quantity, 0),
+      total: `₹${finalTotal.toLocaleString()}`,
+      status: 'Processing',
+    });
     setOrderPlaced(true);
     clearCart();
   };

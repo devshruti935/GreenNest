@@ -1,11 +1,20 @@
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 
+export interface Order {
+  id: string;
+  date: string;
+  items: number;
+  total: string;
+  status: string;
+}
+
 interface User {
   name: string;
   email: string;
   points: number;
   joinedDate: string;
+  orders: Order[];
 }
 
 interface AuthContextType {
@@ -14,6 +23,8 @@ interface AuthContextType {
   login: (email: string, password: string) => void;
   register: (name: string, email: string, password: string) => void;
   addPoints: (points: number) => void;
+  redeemPoints: (points: number) => void;
+  addOrder: (order: Order) => void;
   logout: () => void;
 }
 
@@ -34,7 +45,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       name: email.split('@')[0],
       email,
       points: 1250,
-      joinedDate: 'October 2024',
+      joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+      orders: [],
     });
   };
 
@@ -45,6 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email,
       points: 100, // Welcome bonus
       joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+      orders: [],
     });
   };
 
@@ -54,8 +67,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser((currentUser) => currentUser ? { ...currentUser, points: currentUser.points + points } : currentUser);
   };
 
+  const redeemPoints = (points: number) => {
+    setUser((currentUser) => currentUser && currentUser.points >= points
+      ? { ...currentUser, points: currentUser.points - points }
+      : currentUser);
+  };
+
+  const addOrder = (order: Order) => {
+    setUser((currentUser) => currentUser
+      ? { ...currentUser, orders: [order, ...currentUser.orders] }
+      : currentUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, register, addPoints, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, register, addPoints, redeemPoints, addOrder, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -75,7 +75,6 @@ const Login = () => {
 
         <div className="social-buttons">
           <button className="social-btn" type="button">🔵 Google</button>
-          <button className="social-btn" type="button">⚫ GitHub</button>
         </div>
 
         <p className="auth-footer">

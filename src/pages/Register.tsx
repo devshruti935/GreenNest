@@ -12,7 +12,6 @@ const Register = () => {
     confirmPassword: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [agreed, setAgreed] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,21 +111,10 @@ const Register = () => {
             />
           </div>
 
-          <label className="checkbox-label" style={{ marginBottom: '1rem' }}>
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-            />
-            I agree to the <a href="#" style={{ color: '#52b788' }}>Terms of Service</a> and{' '}
-            <a href="#" style={{ color: '#52b788' }}>Privacy Policy</a>
-          </label>
-
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: '100%', justifyContent: 'center', opacity: agreed ? 1 : 0.5 }}
-            disabled={!agreed}
+            style={{ width: '100%', justifyContent: 'center' }}
           >
             Create Account
           </button>
@@ -138,7 +126,6 @@ const Register = () => {
 
         <div className="social-buttons">
           <button className="social-btn" type="button">🔵 Google</button>
-          <button className="social-btn" type="button">⚫ GitHub</button>
         </div>
 
         <p className="auth-footer">
