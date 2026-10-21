@@ -29,7 +29,8 @@ const Footer = () => {
         <div className="footer-links">
           <h4>Support</h4>
           <ul>
-            <li><a href="#">Contact Us</a></li>
+            <li><a href="mailto:green-nest@gmail.com">Contact Us</a></li>
+            <li><a href="tel:9563214782">Call Us: 9563214782</a></li>
             <li><a href="#">FAQ</a></li>
             <li><a href="#">Shipping Info</a></li>
           </ul>
