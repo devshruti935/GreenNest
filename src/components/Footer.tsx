@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom';
+import logo from '../assets/greennest-logo.png';
 
 const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-brand">
-          <div className="logo">🌿 GreenNest</div>
+          <div className="logo">
+            <img src={logo} alt="GreenNest" />
+          </div>
           <p>Making sustainable living accessible and rewarding for everyone. Shop green, live clean.</p>
         </div>
         <div className="footer-links">
@@ -21,7 +24,6 @@ const Footer = () => {
           <ul>
             <li><Link to="/rewards">Rewards</Link></li>
             <li><Link to="/recycling">Recycling</Link></li>
-            <li><Link to="/about">Our Mission</Link></li>
           </ul>
         </div>
         <div className="footer-links">
@@ -34,7 +36,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="footer-bottom">
-        © 2024 GreenNest. All rights reserved. Made with 💚 for the planet.
+        © 2024 <span className="brand-word">GreenNest</span>. All rights reserved. Made with 💚 for the planet.
       </div>
     </footer>
   );

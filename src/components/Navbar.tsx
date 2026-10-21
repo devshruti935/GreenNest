@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/greennest-logo.png';
 
 const Navbar = () => {
   const location = useLocation();
@@ -12,12 +13,13 @@ const Navbar = () => {
     { to: '/shop', label: 'Shop' },
     { to: '/rewards', label: 'Rewards' },
     { to: '/recycling', label: 'Recycling' },
-    { to: '/about', label: 'About' },
   ];
 
   return (
     <nav className="navbar">
-      <Link to="/" className="logo">🌿 GreenNest</Link>
+      <Link to="/" className="logo" aria-label="GreenNest home">
+        <img src={logo} alt="GreenNest" />
+      </Link>
       <ul className="menu">
         {links.map((link) => (
           <li key={link.to}>

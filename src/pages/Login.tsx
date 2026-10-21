@@ -20,7 +20,7 @@ const Login = () => {
         <div className="auth-header">
           <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🌿</div>
           <h2>Welcome Back</h2>
-          <p>Sign in to your GreenNest account</p>
+          <p>Sign in to your <span className="brand-word">GreenNest</span> account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">

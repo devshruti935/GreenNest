@@ -23,7 +23,7 @@ const About = () => {
         </span>
         <h1>Building a Greener Tomorrow</h1>
         <p>
-          GreenNest was born from a simple idea: sustainable living shouldn't be
+          <span className="brand-word">GreenNest</span> was born from a simple idea: sustainable living shouldn't be
           hard. We connect conscious consumers with artisans who craft beautiful
           products from renewable materials — creating a marketplace that's good
           for people and the planet.
@@ -35,7 +35,7 @@ const About = () => {
         <div className="section-header">
           <span className="label">What We Believe</span>
           <h2>Our Values</h2>
-          <p>These principles guide every decision we make at GreenNest.</p>
+          <p>These principles guide every decision we make at <span className="brand-word">GreenNest</span>.</p>
         </div>
         <div className="values-grid">
           {values.map((v, i) => (

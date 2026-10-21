@@ -13,6 +13,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   login: (email: string, password: string) => void;
   register: (name: string, email: string, password: string) => void;
+  addPoints: (points: number) => void;
   logout: () => void;
 }
 
@@ -49,8 +50,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => setUser(null);
 
+  const addPoints = (points: number) => {
+    setUser((currentUser) => currentUser ? { ...currentUser, points: currentUser.points + points } : currentUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, register, addPoints, logout }}>
       {children}
     </AuthContext.Provider>
   );

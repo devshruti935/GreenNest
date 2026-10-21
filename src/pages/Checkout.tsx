@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, addPoints } = useAuth();
   const navigate = useNavigate();
 
   const [address, setAddress] = useState('');
@@ -15,8 +15,13 @@ const Checkout = () => {
   const [paymentMode, setPaymentMode] = useState('cod');
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
+  const [pointsEarned, setPointsEarned] = useState(0);
 
   const finalTotal = Math.round(totalPrice * 0.95);
+
+  useEffect(() => {
+    if (orderPlaced) window.scrollTo(0, 0);
+  }, [orderPlaced]);
 
   if (!user) {
     navigate('/login');
@@ -30,10 +35,17 @@ const Checkout = () => {
 
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!address.trim() || !city.trim() || !pincode.trim() || !phone.trim()) {
-      alert('Please fill in all address fields');
+    const cleanAddress = address.trim().replace(/[ \t]+/g, ' ');
+    const cleanCity = city.trim().replace(/\s+/g, ' ');
+    if (cleanAddress.length < 10 || !cleanCity || !/^\d{6}$/.test(pincode) || !/^\d{10}$/.test(phone)) {
+      alert('Enter a complete address, a 6-digit PIN code, and a 10-digit phone number.');
       return;
     }
+    setAddress(cleanAddress);
+    setCity(cleanCity);
+    const earned = Math.max(1, Math.round(finalTotal / 10));
+    setPointsEarned(earned);
+    addPoints(earned);
     // Generate a random order ID
     const id = 'GN-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
     setOrderId(id);
@@ -92,7 +104,7 @@ const Checkout = () => {
               </p>
             </div>
             <p style={{ color: '#52b788', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-              🌱 You earned <strong>+{Math.round(finalTotal / 10)}</strong> green points!
+              🌱 You earned <strong>+{pointsEarned}</strong> green points!
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button onClick={() => navigate('/shop')} className="btn btn-primary">
@@ -149,8 +161,12 @@ const Checkout = () => {
                   <textarea
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="House/Flat No., Street, Locality"
+                    onBlur={() => setAddress((current) => current.trim().replace(/[ \t]+/g, ' '))}
+                    placeholder="House/flat number, street, and locality"
                     rows={3}
+                    minLength={10}
+                    maxLength={200}
+                    autoComplete="street-address"
                     required
                     style={{
                       width: '100%',
@@ -173,7 +189,11 @@ const Checkout = () => {
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
+                      onBlur={() => setCity((current) => current.trim().replace(/\s+/g, ' '))}
                       placeholder="City"
+                      minLength={2}
+                      maxLength={60}
+                      autoComplete="address-level2"
                       required
                       style={{
                         width: '100%',
@@ -193,8 +213,12 @@ const Checkout = () => {
                     <input
                       type="text"
                       value={pincode}
-                      onChange={(e) => setPincode(e.target.value)}
-                      placeholder="Pincode"
+                      onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder="6-digit PIN code"
+                      inputMode="numeric"
+                      pattern="[0-9]{6}"
+                      maxLength={6}
+                      autoComplete="postal-code"
                       required
                       style={{
                         width: '100%',
@@ -215,8 +239,12 @@ const Checkout = () => {
                   <input
                     type="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+91 XXXXX XXXXX"
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="10-digit mobile number"
+                    inputMode="numeric"
+                    pattern="[0-9]{10}"
+                    maxLength={10}
+                    autoComplete="tel-national"
                     required
                     style={{
                       width: '100%',

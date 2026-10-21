@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const rewards = [
   { icon: '🎋', name: '10% Off Next Order', cost: '200 pts', desc: 'Save on your next eco-purchase.' },
   { icon: '🌱', name: 'Plant a Tree', cost: '500 pts', desc: 'We plant a tree in your name.' },
@@ -15,6 +17,21 @@ const earnMethods = [
 ];
 
 const Rewards = () => {
+  const [points, setPoints] = useState(1250);
+  const [redeemed, setRedeemed] = useState<string | null>(null);
+
+  const redeem = (name: string, cost: string) => {
+    const requiredPoints = Number(cost.replace(/[^0-9]/g, ''));
+
+    if (points < requiredPoints) {
+      setRedeemed(`You need ${requiredPoints - points} more GreenPoints for ${name}.`);
+      return;
+    }
+
+    setPoints((current) => current - requiredPoints);
+    setRedeemed(`${name} redeemed successfully!`);
+  };
+
   return (
     <div className="page-enter">
       <div className="rewards-hero">
@@ -24,7 +41,7 @@ const Rewards = () => {
         <h1>Your Green Rewards</h1>
         <div className="reward-points-display">
           <div>
-            <div className="points">1,250</div>
+            <div className="points">{points.toLocaleString()}</div>
             <div className="points-label">GreenPoints<br />available to redeem</div>
           </div>
         </div>
@@ -63,10 +80,17 @@ const Rewards = () => {
               <h3>{r.name}</h3>
               <p style={{ color: '#a5c4b5', fontSize: '0.9rem', marginBottom: '0.75rem' }}>{r.desc}</p>
               <div className="reward-cost">{r.cost}</div>
-              <button className="btn-redeem">Redeem</button>
+              <button className="btn-redeem" onClick={() => redeem(r.name, r.cost)}>
+                Redeem
+              </button>
             </div>
           ))}
         </div>
+        {redeemed && (
+          <p role="status" style={{ textAlign: 'center', color: '#52b788', marginTop: '1.5rem', fontWeight: 600 }}>
+            {redeemed}
+          </p>
+        )}
       </section>
     </div>
   );

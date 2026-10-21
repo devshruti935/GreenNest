@@ -39,7 +39,7 @@ const Register = () => {
       <div className="auth-card">
         <div className="auth-header">
           <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🌱</div>
-          <h2>Join GreenNest</h2>
+          <h2>Join <span className="brand-word">GreenNest</span></h2>
           <p>Create your account and start shopping sustainably</p>
         </div>
 

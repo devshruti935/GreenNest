@@ -1,14 +1,34 @@
 import { useState } from 'react';
-import { useCart } from '../context/CartContext';
+import { Link } from 'react-router-dom';
+import AddToCartControl from '../components/AddToCartControl';
+import coconutShellBowlSet from '../assets/coconut-shell-bowl-set.png';
+import bambooTravelMug from '../assets/bamboo-travel-mug.png';
+import bambooComb from '../assets/bamboo-comb.png';
+import coconutShellCandleHolder from '../assets/products/coconut-shell-candle-holder.jpg';
+import bambooCutleryTravelKit from '../assets/products/bamboo-cutlery-travel-kit.jpg';
+import bambooToothbrushPack from '../assets/products/bamboo-toothbrush-pack.jpg';
+import bambooDeskOrganizer from '../assets/products/bamboo-desk-organizer.png';
+import juteToteBag from '../assets/products/jute-tote-bag.jpg';
+import organicCottonTote from '../assets/products/organic-cotton-tote.jpg';
+import recycledFabricCushionCovers from '../assets/products/recycled-fabric-cushion-covers.jpg';
+import beeswaxFoodWraps from '../assets/products/beeswax-food-wraps.jpg';
+import naturalLoofahSpongeSet from '../assets/products/natural-loofah-sponge-set.jpg';
+import recycledGlassVase from '../assets/products/recycled-glass-vase.jpg';
+import seedPaperNotebook from '../assets/products/seed-paper-notebook.jpg';
+import recycledPaperPencilSet from '../assets/products/recycled-paper-pencil-set.jpg';
+import stainlessSteelWaterBottle from '../assets/products/stainless-steel-water-bottle.jpg';
+import bambooStrawSet from '../assets/products/bamboo-straw-set.png';
+import bambooSoapDish from '../assets/products/bamboo-soap-dish.png';
+import organicCottonProduceBags from '../assets/products/organic-cotton-produce-bags.png';
 
-const products = [
+export const products = [
   // ── Coconut Shell Products ──
   {
     id: 1,
     name: 'Coconut Shell Bowl Set',
     desc: 'Hand-polished natural coconut shell bowls. Set of 4 with wooden spoons.',
     price: '₹899',
-    image: 'https://www.ubuy.co.in/product/10LZ1BOW-vncraft-natural-coconut-bowls-and-spoons-set-of-2-polished-with-coconut-oil-durable-lightweight-usef?srsltid=AU7gw4XTpZqN-vPaVQx-cya3qrRiYsOuoUu3SsQ2BsRKq5ZKdAjBGBr_',
+    image: coconutShellBowlSet,
     badge: 'Best Seller',
     category: 'Kitchen',
   },
@@ -17,7 +37,7 @@ const products = [
     name: 'Coconut Shell Candle Holder',
     desc: 'Rustic hand-carved candle holder with natural coconut texture.',
     price: '₹449',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDMZqDZcYRMxhx-ihMCC0QrKptftob-dLn923tNjNuGCrS6kJoL2Nlwf8&s=10',
+    image: coconutShellCandleHolder,
     badge: 'Artisan',
     category: 'Home Decor',
   },
@@ -27,7 +47,7 @@ const products = [
     name: 'Bamboo Cutlery Travel Kit',
     desc: 'Reusable bamboo fork, knife, spoon, straw & chopsticks with cotton pouch.',
     price: '₹499',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpTqNN18zsBFZEOMYBEKGknHM1QcmIv_qjtvEqItio22JFyjxv8-beJ9PE&s=10',
+    image: bambooCutleryTravelKit,
     badge: 'Eco Pick',
     category: 'Kitchen',
   },
@@ -36,7 +56,7 @@ const products = [
     name: 'Bamboo Toothbrush Pack',
     desc: 'Pack of 4 biodegradable bamboo toothbrushes with charcoal bristles.',
     price: '₹299',
-    image: 'https://brownliving.in/cdn/shop/products/bamboo-toothbrush-pack-of-4-ecomantraa-sustainable-oral-care-brown-living-em-bl-0001-280124.jpg?v=1710266895&width=1200',
+    image: bambooToothbrushPack,
     badge: 'Popular',
     category: 'Personal Care',
   },
@@ -45,7 +65,7 @@ const products = [
     name: 'Bamboo Desk Organizer',
     desc: 'Multi-compartment bamboo organizer for pens, phones, and stationery.',
     price: '₹749',
-    image: 'https://wctgifts.com/wp-content/uploads/2024/07/Screenshot-2024-07-27-135729.png',
+    image: bambooDeskOrganizer,
     badge: 'New',
     category: 'Office',
   },
@@ -55,7 +75,7 @@ const products = [
     name: 'Jute Tote Bag',
     desc: 'Durable hand-woven jute bag with reinforced handles for daily carry.',
     price: '₹349',
-    image: 'https://imagescdn.jaypore.com/img/app/product/3/39948497-19180188.jpg',
+    image: juteToteBag,
     badge: 'Best Seller',
     category: 'Bags',
   },
@@ -64,7 +84,7 @@ const products = [
     name: 'Organic Cotton Tote',
     desc: 'Lightweight organic cotton bag with botanical print. Machine washable.',
     price: '₹299',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfsBCjYCQBb0grp_WKR9VeviocfcBWBIzeYJPN6Szv6NuxN2hI0SUO4_U&s=10',
+    image: organicCottonTote,
     badge: 'Organic',
     category: 'Bags',
   },
@@ -73,9 +93,18 @@ const products = [
     name: 'Recycled Fabric Cushion Covers',
     desc: 'Set of 2 cushion covers made from upcycled fabric scraps.',
     price: '₹599',
-    image: 'https://dwijproducts.com/cdn/shop/files/hand-embroidered-upcycled-jeans-cushion-covers-set-of-2-boxed-395341.jpg?v=1739893982',
+    image: recycledFabricCushionCovers,
     badge: 'Upcycled',
     category: 'Home Decor',
+  },
+  {
+    id: 22,
+    name: 'Organic Cotton Produce Bags',
+    desc: 'Three washable mesh bags for carrying fruit, vegetables, and pantry staples.',
+    price: '₹449',
+    image: organicCottonProduceBags,
+    badge: 'Reusable',
+    category: 'Bags',
   },
   // ── Beeswax & Natural ──
   {
@@ -83,7 +112,7 @@ const products = [
     name: 'Beeswax Food Wraps',
     desc: 'Replace single-use plastic wrap. Pack of 3 sizes (S, M, L).',
     price: '₹599',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu9xf69ghVHCt6UfjUL5JDzi9_EPk5GcWGZu5nZJdq1ijQRnLpnFhrJJEU&s=10',
+    image: beeswaxFoodWraps,
     badge: 'Eco Pick',
     category: 'Kitchen',
   },
@@ -92,7 +121,25 @@ const products = [
     name: 'Natural Loofah Sponge Set',
     desc: 'Pack of 5 biodegradable loofahs for kitchen and bath use.',
     price: '₹249',
-    image: 'https://www.ulamart.com/media/catalog/product/r/i/ridge-gourd-scrubber.jpg',
+    image: naturalLoofahSpongeSet,
+    badge: 'Natural',
+    category: 'Personal Care',
+  },
+  {
+    id: 19,
+    name: 'Bamboo Wide-Tooth Comb',
+    desc: 'Smooth, wide-tooth bamboo comb that gently detangles hair and is plastic-free.',
+    price: '₹279',
+    image: bambooComb,
+    badge: 'Plastic-Free',
+    category: 'Personal Care',
+  },
+  {
+    id: 21,
+    name: 'Bamboo Soap Dish',
+    desc: 'Draining bamboo soap dish that helps your soap stay dry between uses.',
+    price: '₹399',
+    image: bambooSoapDish,
     badge: 'Natural',
     category: 'Personal Care',
   },
@@ -102,7 +149,7 @@ const products = [
     name: 'Recycled Glass Vase',
     desc: 'Beautiful hand-blown vase from 100% recycled glass. Each one unique.',
     price: '₹1,299',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrRav0vzu0C_1VF1DeYZVsmhYkw4ZWdNLeV4ZxqVaSn_1x9TEVPDH05aGG&s=10',
+    image: recycledGlassVase,
     badge: 'Artisan',
     category: 'Home Decor',
   },
@@ -113,7 +160,7 @@ const products = [
     name: 'Seed Paper Notebook',
     desc: 'Write your notes, then plant the cover! Embedded with wildflower seeds.',
     price: '₹399',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-_JuhQLqxSCXBYwdvJGek_JgmHCF0-Ju7bNf85C95R3Cqh5DH_Ejabh0&s=10',
+    image: seedPaperNotebook,
     badge: 'Unique',
     category: 'Stationery',
   },
@@ -122,28 +169,17 @@ const products = [
     name: 'Recycled Paper Pencil Set',
     desc: 'Set of 12 pencils made from recycled newspapers. Non-toxic.',
     price: '₹199',
-    image: 'https://m.media-amazon.com/images/I/41X9eYm9l2L._AC_UF1000,1000_QL80_.jpg',
+    image: recycledPaperPencilSet,
     badge: 'Recycled',
     category: 'Stationery',
   },
-  // ── Textiles ──
-  {
-    id: 15,
-    name: 'Organic Cotton Towels',
-    desc: 'Soft, chemical-free bath towels dyed with plant-based colors. Set of 2.',
-    price: '₹749',
-    image: 'https://images.unsplash.com/photo-1616627547584-bf28cee262db?auto=format&fit=crop&w=600&q=80',
-    badge: 'Organic',
-    category: 'Bath',
-  },
-  
   // ── Drinkware ──
   {
     id: 17,
     name: 'Stainless Steel Water Bottle',
     desc: 'Double-wall insulated 750ml bottle. Keeps drinks cold 24hrs, hot 12hrs.',
     price: '₹799',
-    image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80',
+    image: stainlessSteelWaterBottle,
     badge: 'Popular',
     category: 'Drinkware',
   },
@@ -152,8 +188,17 @@ const products = [
     name: 'Bamboo Travel Mug',
     desc: 'Leak-proof bamboo exterior travel mug with silicone lid. 350ml.',
     price: '₹549',
-    image: 'https://www.indiamart.com/proddetail/bamboo-travel-coffee-mug-2854444736012.html?srsltid=AU7gw4Wdrqqp-PbKml_-YdevxPb6_9GYy2ucoqmyVNgfCYNXzYJF2B5J',
+    image: bambooTravelMug,
     badge: 'New',
+    category: 'Drinkware',
+  },
+  {
+    id: 20,
+    name: 'Bamboo Straw Set',
+    desc: 'Set of 6 reusable bamboo straws with a cotton pouch and cleaning brush.',
+    price: '₹329',
+    image: bambooStrawSet,
+    badge: 'Plastic-Free',
     category: 'Drinkware',
   },
 ];
@@ -163,7 +208,6 @@ const categories = ['All', ...Array.from(new Set(products.map((p) => p.category)
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const { addToCart } = useCart();
 
   const filtered = products.filter((p) => {
     const matchCat = activeCategory === 'All' || p.category === activeCategory;
@@ -217,22 +261,24 @@ const Shop = () => {
         <div className="product-grid">
           {filtered.map((product) => (
             <div className="product-card" key={product.id}>
-              <div className="product-image-wrapper">
-                <img
-                  className="product-image"
-                  src={product.image}
-                  alt={product.name}
-                  loading="lazy"
-                />
-                <span className="eco-badge">{product.badge}</span>
-              </div>
-              <div className="product-info">
-                <h3>{product.name}</h3>
-                <p className="product-desc">{product.desc}</p>
-                <div className="product-bottom">
-                  <span className="price">{product.price}</span>
-                  <button className="btn-add" onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, image: product.image })}>Add to Cart</button>
+              <Link to={`/product/${product.id}`} className="product-detail-link">
+                <div className="product-image-wrapper">
+                  <img
+                    className="product-image"
+                    src={product.image}
+                    alt={product.name}
+                    loading="lazy"
+                  />
+                  <span className="eco-badge">{product.badge}</span>
                 </div>
+                <div className="product-info">
+                  <h3>{product.name}</h3>
+                  <p className="product-desc">{product.desc}</p>
+                </div>
+              </Link>
+              <div className="product-info product-bottom">
+                <span className="price">{product.price}</span>
+                <AddToCartControl product={{ id: product.id, name: product.name, price: product.price, image: product.image }} />
               </div>
             </div>
           ))}
