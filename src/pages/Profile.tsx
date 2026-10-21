@@ -98,6 +98,30 @@ const Profile = () => {
             ))}
           </div>
         </div>
+
+        <div className="profile-section">
+          <h3 style={{ marginBottom: '1rem', fontSize: '1.15rem' }}>🎁 Rewards History</h3>
+          {user.redemptions.length ? user.redemptions.map((redemption) => (
+            <div className="order-item" key={redemption.id}>
+              <div><strong>{redemption.name}</strong><div style={{ fontSize: '.85rem', color: '#6b8f7e', marginTop: '.25rem' }}>{redemption.date}</div></div>
+              <span style={{ color: '#f4a261', fontWeight: 700 }}>−{redemption.points} pts</span>
+            </div>
+          )) : <p style={{ color: '#6b8f7e' }}>Your redeemed rewards will appear here.</p>}
+        </div>
+
+        <div className="profile-section">
+          <h3 style={{ marginBottom: '1rem', fontSize: '1.15rem' }}>♻️ Recycling Pickup Status</h3>
+          {user.pickups.length ? user.pickups.map((pickup) => (
+            <div className="order-item" key={pickup.id}>
+              <div>
+                <strong>{pickup.id}</strong>
+                <div style={{ fontSize: '.85rem', color: '#6b8f7e', marginTop: '.25rem' }}>{pickup.materials.join(', ')} · {pickup.date}</div>
+                {pickup.orderId && <div style={{ fontSize: '.85rem', color: '#6b8f7e' }}>Linked to {pickup.orderId}</div>}
+              </div>
+              <span className="order-status shipped">{pickup.status}</span>
+            </div>
+          )) : <p style={{ color: '#6b8f7e' }}>No recycling pickups scheduled. <Link to="/recycling">Schedule one</Link> to have it collected with your next order delivery.</p>}
+        </div>
       </div>
 
       {/* Logout */}

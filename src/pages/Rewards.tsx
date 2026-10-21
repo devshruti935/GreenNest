@@ -36,7 +36,7 @@ const Rewards = () => {
       return;
     }
 
-    redeemPoints(requiredPoints);
+    redeemPoints(name, requiredPoints);
     setRedeemed(`${name} redeemed successfully!`);
   };
 

@@ -13,6 +13,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Profile from "./pages/Profile";
 import ProductDetails from "./pages/ProductDetails";
+import Favorites from "./pages/Favorites";
 import ScrollToTop from "./components/ScrollToTop";
 import "./index.css";
 import "./App.css";
@@ -27,6 +28,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Hero />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/favorites" element={<Favorites />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/rewards" element={<Rewards />} />
             <Route path="/recycling" element={<Recycling />} />

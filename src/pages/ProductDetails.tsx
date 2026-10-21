@@ -1,9 +1,11 @@
 import { Link, useParams } from 'react-router-dom';
 import { products } from './Shop';
 import AddToCartControl from '../components/AddToCartControl';
+import { useAuth } from '../context/AuthContext';
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const { favorites, toggleFavorite } = useAuth();
   const product = products.find((item) => String(item.id) === id);
 
   if (!product) {
@@ -28,6 +30,9 @@ const ProductDetails = () => {
           <p className="product-detail-price">{product.price}</p>
           <h2>About this product</h2>
           <p className="product-detail-description">{product.desc}</p>
+          <button type="button" className="btn btn-outline" onClick={() => toggleFavorite(product.id)} style={{ marginBottom: '1rem' }}>
+            {favorites.includes(product.id) ? '♥ Remove from Favorites' : '♡ Add to Favorites'}
+          </button>
           <AddToCartControl
             variant="primary"
             product={{ id: product.id, name: product.name, price: product.price, image: product.image }}

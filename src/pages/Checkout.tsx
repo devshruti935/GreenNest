@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
-  const { user, addPoints, addOrder } = useAuth();
+  const { user, addPoints, addOrder, attachPendingPickups } = useAuth();
   const navigate = useNavigate();
 
   const [address, setAddress] = useState('');
@@ -56,6 +56,9 @@ const Checkout = () => {
       total: `₹${finalTotal.toLocaleString()}`,
       status: 'Processing',
     });
+    if (user.pickups.some((pickup) => pickup.status === 'Awaiting next order delivery')) {
+      attachPendingPickups(id);
+    }
     setOrderPlaced(true);
     clearCart();
   };
@@ -113,6 +116,11 @@ const Checkout = () => {
             <p style={{ color: '#52b788', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
               🌱 You earned <strong>+{pointsEarned}</strong> green points!
             </p>
+            {user.pickups.some((pickup) => pickup.orderId === orderId) && (
+              <p role="status" style={{ color: '#52b788', marginBottom: '1.5rem' }}>
+                ♻️ Your recycling items are scheduled to be picked up with this order's delivery.
+              </p>
+            )}
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button onClick={() => navigate('/shop')} className="btn btn-primary">
                 Continue Shopping

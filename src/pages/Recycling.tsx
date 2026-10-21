@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const materials = [
   { icon: '📦', name: 'Cardboard' },
@@ -13,14 +15,17 @@ const materials = [
 
 const steps = [
   { num: 1, title: 'Select Materials', desc: 'Choose what recyclable materials you want to schedule for pickup.' },
-  { num: 2, title: 'Schedule Pickup', desc: 'Pick a convenient date and time. Our team comes to your doorstep.' },
+  { num: 2, title: 'Schedule Pickup', desc: 'We will collect your selected items when your next order is delivered.' },
   { num: 3, title: 'Earn Rewards', desc: 'Get GreenPoints credited to your account for every kg recycled.' },
 ];
 
 const Recycling = () => {
   const [selected, setSelected] = useState<string[]>([]);
+  const [message, setMessage] = useState('');
+  const { user, addPickup } = useAuth();
 
   const toggleMaterial = (name: string) => {
+    setMessage('');
     setSelected((prev) =>
       prev.includes(name) ? prev.filter((m) => m !== name) : [...prev, name]
     );
@@ -78,9 +83,30 @@ const Recycling = () => {
 
         {selected.length > 0 && (
           <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-            <button className="btn btn-primary">
+            <button className="btn btn-primary" onClick={() => {
+              if (!user) {
+                setMessage('Sign in to schedule a recycling pickup.');
+                return;
+              }
+              addPickup(selected);
+              setSelected([]);
+              setMessage('Pickup request saved. We will collect it with your next order delivery.');
+            }}>
               📅 Schedule Pickup ({selected.length} item{selected.length > 1 ? 's' : ''})
             </button>
+          </div>
+        )}
+        {message && <p role="status" style={{ textAlign: 'center', marginTop: '1rem', color: '#52b788' }}>{message} {!user && <Link to="/login">Sign in</Link>}</p>}
+        {user && user.pickups.length > 0 && (
+          <div className="profile-section" style={{ maxWidth: '760px', margin: '2rem auto 0' }}>
+            <h3 style={{ marginBottom: '1rem' }}>♻️ Pickup status</h3>
+            {user.pickups.map((pickup) => (
+              <div className="order-item" key={pickup.id}>
+                <div><strong>{pickup.id}</strong><p style={{ color: '#8fbfa8', marginTop: '.35rem' }}>{pickup.materials.join(', ')} · {pickup.date}{pickup.orderId ? ` · Order ${pickup.orderId}` : ''}</p></div>
+                <span className="order-status shipped">{pickup.status}</span>
+              </div>
+            ))}
+            <p style={{ color: '#6b8f7e', marginTop: '1rem', fontSize: '.9rem' }}>Once you place an order, pending pickups are linked to it and collected when it is delivered.</p>
           </div>
         )}
       </section>

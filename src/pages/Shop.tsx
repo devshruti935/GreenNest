@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AddToCartControl from '../components/AddToCartControl';
+import { useAuth } from '../context/AuthContext';
 import coconutShellBowlSet from '../assets/coconut-shell-bowl-set.png';
 import bambooTravelMug from '../assets/bamboo-travel-mug.png';
 import bambooComb from '../assets/bamboo-comb.png';
@@ -208,6 +209,7 @@ const categories = ['All', ...Array.from(new Set(products.map((p) => p.category)
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const { favorites, toggleFavorite } = useAuth();
 
   const filtered = products.filter((p) => {
     const matchCat = activeCategory === 'All' || p.category === activeCategory;
@@ -260,7 +262,7 @@ const Shop = () => {
 
         <div className="product-grid">
           {filtered.map((product) => (
-            <div className="product-card" key={product.id}>
+            <div className="product-card" key={product.id} style={{ position: 'relative' }}>
               <Link to={`/product/${product.id}`} className="product-detail-link">
                 <div className="product-image-wrapper">
                   <img
@@ -276,6 +278,13 @@ const Shop = () => {
                   <p className="product-desc">{product.desc}</p>
                 </div>
               </Link>
+              <button
+                type="button"
+                aria-label={favorites.includes(product.id) ? `Remove ${product.name} from favorites` : `Add ${product.name} to favorites`}
+                title={favorites.includes(product.id) ? 'Remove from favorites' : 'Add to favorites'}
+                onClick={() => toggleFavorite(product.id)}
+                style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2, border: '1px solid rgba(82,183,136,.3)', borderRadius: '50%', width: '38px', height: '38px', cursor: 'pointer', background: 'rgba(10,30,20,.85)', color: '#ff8fab', fontSize: '1.2rem' }}
+              >{favorites.includes(product.id) ? '♥' : '♡'}</button>
               <div className="product-info product-bottom">
                 <span className="price">{product.price}</span>
                 <AddToCartControl product={{ id: product.id, name: product.name, price: product.price, image: product.image }} />

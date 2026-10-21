@@ -6,11 +6,12 @@ import logo from '../assets/greennest-logo.png';
 const Navbar = () => {
   const location = useLocation();
   const { totalItems } = useCart();
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, user, favorites } = useAuth();
 
   const links = [
     { to: '/', label: 'Home' },
     { to: '/shop', label: 'Shop' },
+    { to: '/favorites', label: `Favorites${favorites.length ? ` (${favorites.length})` : ''}` },
     { to: '/rewards', label: 'Rewards' },
     { to: '/recycling', label: 'Recycling' },
   ];
