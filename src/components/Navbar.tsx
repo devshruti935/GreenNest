@@ -9,11 +9,11 @@ const Navbar = () => {
   const { isLoggedIn, user, favorites } = useAuth();
 
   const links = [
-    { to: '/', label: 'Home' },
-    { to: '/shop', label: 'Shop' },
-    { to: '/favorites', label: `Favorites${favorites.length ? ` (${favorites.length})` : ''}` },
-    { to: '/rewards', label: 'Rewards' },
-    { to: '/recycling', label: 'Recycling' },
+    { to: '/', label: 'Home', icon: '⌂' },
+    { to: '/shop', label: 'Shop', icon: '▦' },
+    { to: '/favorites', label: 'Favorites', icon: '♡' },
+    { to: '/rewards', label: 'Rewards', icon: '✧' },
+    { to: '/recycling', label: 'Recycle', icon: '♻' },
   ];
 
   return (
@@ -28,7 +28,9 @@ const Navbar = () => {
               to={link.to}
               className={location.pathname === link.to ? 'active' : ''}
             >
-              {link.label}
+              <span className="mobile-nav-icon" aria-hidden="true">{link.icon}</span>
+              <span>{link.label}</span>
+              {link.to === '/favorites' && favorites.length > 0 && <span className="mobile-nav-count">{favorites.length}</span>}
             </Link>
           </li>
         ))}
