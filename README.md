@@ -1,32 +1,47 @@
-# React + TypeScript + Vite
+# GreenNest
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+GreenNest is a responsive UI/UX prototype for an eco-friendly online shop. It demonstrates product discovery, shopping, rewards, customer reviews, and recycling pickup flows.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Requirements: Node.js and npm.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Open the local URL printed by Vite in your browser.
+
+## Available commands
+
+```bash
+npm run dev      # Start the development server
+npm run build    # Type-check and create a production build in dist/
+npm run preview  # Preview the production build locally
+npm run lint     # Run Oxlint
+```
+
+## Prototype features
+
+- Browse products by category or material, search the catalog, and sort by price or name.
+- View product details, add products to favorites, and manage cart quantities (up to 10 per product).
+- Submit product reviews with a star rating. Reviews are saved in the current browser on the current device.
+- Complete the demo checkout and view order details, GreenPoints, reward redemptions, and recycling pickup status in the profile.
+- Switch between light and dark themes; the selected theme is saved in the current browser.
+- Schedule a recycling pickup and attach it to the next order delivery.
+
+## Prototype limitations
+
+This project is a front-end prototype and has no backend. Account, cart, order, points, and pickup data are held in app memory and may reset when the page reloads or the user signs out. Product reviews and the theme choice use browser local storage and do not sync across devices. Payment methods are demonstration UI only; no payment is processed.
+
+## Project structure
+
+- `src/` — React pages, components, context, styles, and local product assets.
+- `index.html` — Vite application entry page.
+- `vite.config.ts` — Vite and React configuration.
+- `tsconfig*.json` — TypeScript configuration.
+- `vercel.json` — Rewrites application routes to the SPA entry point for Vercel deployments.
+- `.oxlintrc.json` — Oxlint configuration.
+
+Product images are stored locally in `src/assets` and bundled with the site.
