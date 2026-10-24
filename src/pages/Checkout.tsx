@@ -2,6 +2,28 @@ import { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';
+
+const cities = [
+  'Ahmedabad', 'Bengaluru', 'Bhopal', 'Bhubaneswar', 'Chandigarh', 'Chennai',
+  'Coimbatore', 'Dehradun', 'Delhi', 'Guwahati', 'Hyderabad', 'Indore', 'Jaipur',
+  'Kanpur', 'Kochi', 'Kolkata', 'Lucknow', 'Mumbai', 'Mysuru', 'Nagpur', 'Patna',
+  'Pune', 'Surat', 'Thiruvananthapuram', 'Visakhapatnam',
+];
+
+const paymentInputStyle = {
+  display: 'block',
+  width: '100%',
+  marginTop: '.4rem',
+  padding: '.75rem 1rem',
+  background: 'rgba(82,183,136,0.08)',
+  border: '1px solid rgba(82,183,136,0.2)',
+  borderRadius: '10px',
+  color: '#d4e8db',
+  fontFamily: 'Inter, sans-serif',
+  fontSize: '.95rem',
+  outline: 'none',
+};
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -10,14 +32,21 @@ const Checkout = () => {
 
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
+  const [customCity, setCustomCity] = useState('');
   const [pincode, setPincode] = useState('');
   const [phone, setPhone] = useState('');
   const [paymentMode, setPaymentMode] = useState('cod');
+  const [cardholder, setCardholder] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [bankName, setBankName] = useState('');
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [pointsEarned, setPointsEarned] = useState(0);
 
   const finalTotal = Math.round(totalPrice * 0.95);
+  const demoUpiIntent = `upi://pay?pa=demo%40greennest.invalid&pn=GreenNest%20Demo&am=${finalTotal}&cu=INR&tn=Demo%20order`;
 
   useEffect(() => {
     if (orderPlaced) window.scrollTo(0, 0);
@@ -36,7 +65,7 @@ const Checkout = () => {
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanAddress = address.trim().replace(/[ \t]+/g, ' ');
-    const cleanCity = city.trim().replace(/\s+/g, ' ');
+    const cleanCity = (city === 'Other' ? customCity : city).trim().replace(/\s+/g, ' ');
     if (cleanAddress.length < 10 || !cleanCity || !/^\d{6}$/.test(pincode) || !/^\d{10}$/.test(phone)) {
       alert('Enter a complete address, a 6-digit PIN code, and a 10-digit phone number.');
       return;
@@ -53,6 +82,8 @@ const Checkout = () => {
       id,
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       items: items.reduce((count, item) => count + item.quantity, 0),
+      products: items.map(({ id: productId, name, quantity, price }) => ({ id: productId, name, quantity, price })),
+      pointsEarned: earned,
       total: `₹${finalTotal.toLocaleString()}`,
       status: 'Processing',
     });
@@ -200,28 +231,53 @@ const Checkout = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
                     <label style={{ color: '#8fbfa8', fontSize: '0.85rem', display: 'block', marginBottom: '0.4rem' }}>City *</label>
-                    <input
-                      type="text"
+                    <select
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      onBlur={() => setCity((current) => current.trim().replace(/\s+/g, ' '))}
-                      placeholder="City"
-                      minLength={2}
-                      maxLength={60}
                       autoComplete="address-level2"
                       required
                       style={{
                         width: '100%',
                         padding: '0.75rem 1rem',
-                        background: 'rgba(82,183,136,0.08)',
+                        background: '#e5f0e7',
                         border: '1px solid rgba(82,183,136,0.2)',
                         borderRadius: '10px',
-                        color: '#d4e8db',
+                        color: '#173b2b',
                         fontFamily: 'Inter, sans-serif',
                         fontSize: '0.95rem',
                         outline: 'none',
+                        colorScheme: 'light',
                       }}
-                    />
+                    >
+                      <option value="" style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>Choose your city</option>
+                      {cities.map((cityOption) => <option key={cityOption} value={cityOption} style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>{cityOption}</option>)}
+                      <option value="Other" style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>Other</option>
+                    </select>
+                    {city === 'Other' && (
+                      <input
+                        type="text"
+                        value={customCity}
+                        onChange={(e) => setCustomCity(e.target.value)}
+                        onBlur={() => setCustomCity((current) => current.trim().replace(/\s+/g, ' '))}
+                        placeholder="Enter your city"
+                        minLength={2}
+                        maxLength={60}
+                        autoComplete="address-level2"
+                        required
+                        style={{
+                          width: '100%',
+                          marginTop: '.6rem',
+                          padding: '0.75rem 1rem',
+                          background: 'rgba(82,183,136,0.08)',
+                          border: '1px solid rgba(82,183,136,0.2)',
+                          borderRadius: '10px',
+                          color: '#d4e8db',
+                          fontFamily: 'Inter, sans-serif',
+                          fontSize: '0.95rem',
+                          outline: 'none',
+                        }}
+                      />
+                    )}
                   </div>
                   <div>
                     <label style={{ color: '#8fbfa8', fontSize: '0.85rem', display: 'block', marginBottom: '0.4rem' }}>Pincode *</label>
@@ -277,6 +333,27 @@ const Checkout = () => {
               </div>
             </div>
 
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', padding: '1.25rem 1.5rem', borderRadius: '14px', background: 'rgba(82,183,136,0.08)', border: '1px solid rgba(82,183,136,0.2)' }}>
+              <div>
+                <strong style={{ color: '#52b788' }}>♻️ Want to recycle with GreenNest?</strong>
+                <p style={{ color: '#8fbfa8', fontSize: '.88rem', marginTop: '.25rem' }}>Schedule a recycling pickup to go with your order.</p>
+              </div>
+              <button type="button" className="btn btn-outline" onClick={() => navigate('/recycling')}>
+                Recycle with this order
+              </button>
+            </div>
+
+            {user.pickups.filter((pickup) => pickup.status === 'Awaiting next order delivery').length > 0 && (
+              <div style={{ padding: '1.25rem 1.5rem', borderRadius: '14px', background: 'rgba(82,183,136,0.08)', border: '1px solid rgba(82,183,136,0.2)' }}>
+                <strong style={{ color: '#52b788' }}>♻️ Recycling pickup added to this order</strong>
+                {user.pickups.filter((pickup) => pickup.status === 'Awaiting next order delivery').map((pickup) => (
+                  <p key={pickup.id} style={{ color: '#8fbfa8', fontSize: '.9rem', marginTop: '.45rem' }}>
+                    {pickup.materials.join(', ')} · {pickup.date}
+                  </p>
+                ))}
+              </div>
+            )}
+
             {/* Payment Mode */}
             <div style={{
               background: 'rgba(10, 30, 20, 0.6)',
@@ -323,6 +400,60 @@ const Checkout = () => {
                   </label>
                 ))}
               </div>
+
+              {paymentMode === 'upi' && (
+                <div style={{ marginTop: '1.25rem', padding: '1.25rem', borderRadius: '12px', background: 'rgba(82,183,136,0.07)', border: '1px solid rgba(82,183,136,0.15)', textAlign: 'center' }}>
+                  <h4 style={{ color: '#d4e8db', marginBottom: '.75rem' }}>Scan with any UPI app</h4>
+                  <div style={{ display: 'inline-block', padding: '0.75rem', borderRadius: '12px', background: '#fff' }}>
+                    <QRCodeSVG value={demoUpiIntent} size={180} level="M" />
+                  </div>
+                  <p style={{ color: '#f4a261', fontWeight: 600, marginTop: '.75rem' }}>Demo QR — payments are not enabled</p>
+                  <p style={{ color: '#8fbfa8', fontSize: '.85rem', marginTop: '.35rem' }}>A real GreenNest UPI ID and payment verification are needed to accept payments.</p>
+                </div>
+              )}
+
+              {paymentMode === 'card' && (
+                <div style={{ marginTop: '1.25rem', padding: '1.25rem', borderRadius: '12px', background: 'rgba(82,183,136,0.07)', border: '1px solid rgba(82,183,136,0.15)', display: 'grid', gap: '1rem' }}>
+                  <h4 style={{ color: '#d4e8db' }}>Card details</h4>
+                  <label style={{ color: '#8fbfa8', fontSize: '.85rem' }}>Name on card
+                    <input value={cardholder} onChange={(e) => setCardholder(e.target.value)} autoComplete="cc-name" placeholder="Cardholder name" minLength={2} required style={paymentInputStyle} />
+                  </label>
+                  <label style={{ color: '#8fbfa8', fontSize: '.85rem' }}>Card number
+                    <input value={cardNumber} onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, '').slice(0, 19).replace(/(.{4})/g, '$1 ').trim())} autoComplete="cc-number" inputMode="numeric" placeholder="1234 5678 9012 3456" minLength={19} maxLength={23} required style={paymentInputStyle} />
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.75rem' }}>
+                    <label style={{ color: '#8fbfa8', fontSize: '.85rem' }}>Expiry (MM/YY)
+                      <input value={cardExpiry} onChange={(e) => { const digits = e.target.value.replace(/\D/g, '').slice(0, 4); setCardExpiry(digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits); }} autoComplete="cc-exp" inputMode="numeric" placeholder="MM/YY" pattern="(0[1-9]|1[0-2])/[0-9]{2}" maxLength={5} required style={paymentInputStyle} />
+                    </label>
+                    <label style={{ color: '#8fbfa8', fontSize: '.85rem' }}>CVV
+                      <input type="password" value={cardCvv} onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))} autoComplete="cc-csc" inputMode="numeric" placeholder="3–4 digits" pattern="[0-9]{3,4}" minLength={3} maxLength={4} required style={paymentInputStyle} />
+                    </label>
+                  </div>
+                  <p style={{ color: '#f4a261', fontSize: '.82rem' }}>Demo checkout only. Card information is not sent, charged, or saved.</p>
+                </div>
+              )}
+
+              {paymentMode === 'netbanking' && (
+                <div style={{ marginTop: '1.25rem', padding: '1.25rem', borderRadius: '12px', background: 'rgba(82,183,136,0.07)', border: '1px solid rgba(82,183,136,0.15)' }}>
+                  <label htmlFor="bank-name" style={{ color: '#8fbfa8', fontSize: '.85rem' }}>Choose your bank
+                    <select id="bank-name" value={bankName} onChange={(e) => setBankName(e.target.value)} required style={{ ...paymentInputStyle, background: '#e5f0e7', color: '#173b2b', colorScheme: 'light' }}>
+                      <option value="" style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>Select a bank</option>
+                      <option style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>State Bank of India</option>
+                      <option style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>HDFC Bank</option>
+                      <option style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>ICICI Bank</option>
+                      <option style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>Axis Bank</option>
+                      <option style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>Kotak Mahindra Bank</option>
+                      <option style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>Punjab National Bank</option>
+                      <option style={{ color: '#173b2b', backgroundColor: '#f7faf7' }}>Other bank</option>
+                    </select>
+                  </label>
+                  <p style={{ color: '#f4a261', fontSize: '.82rem', marginTop: '.75rem' }}>Demo checkout only. Bank sign-in and payment processing are not connected.</p>
+                </div>
+              )}
+
+              {paymentMode === 'cod' && (
+                <p style={{ color: '#8fbfa8', fontSize: '.85rem', marginTop: '1rem' }}>No payment details needed. Pay when your order is delivered.</p>
+              )}
             </div>
           </div>
 

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const materials = [
   { icon: '📦', name: 'Cardboard' },
@@ -11,6 +13,7 @@ const materials = [
   { icon: '👕', name: 'Old Clothing' },
   { icon: '📱', name: 'E-Waste' },
   { icon: '🔋', name: 'Batteries' },
+  { icon: '➕', name: 'Other' },
 ];
 
 const steps = [
@@ -21,8 +24,11 @@ const steps = [
 
 const Recycling = () => {
   const [selected, setSelected] = useState<string[]>([]);
+  const [otherMaterial, setOtherMaterial] = useState('');
   const [message, setMessage] = useState('');
   const { user, addPickup } = useAuth();
+  const { items: cartItems } = useCart();
+  const navigate = useNavigate();
 
   const toggleMaterial = (name: string) => {
     setMessage('');
@@ -81,6 +87,22 @@ const Recycling = () => {
           ))}
         </div>
 
+        {selected.includes('Other') && (
+          <div style={{ maxWidth: '480px', margin: '1.25rem auto 0' }}>
+            <label htmlFor="other-material" style={{ display: 'block', color: '#a5c4b5', marginBottom: '.45rem' }}>Please specify the material</label>
+            <input
+              id="other-material"
+              value={otherMaterial}
+              onChange={(event) => { setOtherMaterial(event.target.value); setMessage(''); }}
+              placeholder="Enter recyclable material"
+              minLength={2}
+              maxLength={60}
+              required
+              style={{ width: '100%', padding: '.8rem 1rem', borderRadius: '10px', border: '1px solid rgba(82,183,136,.25)', background: 'rgba(82,183,136,.07)', color: '#d4e8db', font: 'inherit' }}
+            />
+          </div>
+        )}
+
         {selected.length > 0 && (
           <div style={{ textAlign: 'center', marginTop: '2rem' }}>
             <button className="btn btn-primary" onClick={() => {
@@ -88,9 +110,15 @@ const Recycling = () => {
                 setMessage('Sign in to schedule a recycling pickup.');
                 return;
               }
-              addPickup(selected);
+              const cleanOtherMaterial = otherMaterial.trim().replace(/\s+/g, ' ');
+              if (selected.includes('Other') && cleanOtherMaterial.length < 2) {
+                setMessage('Please specify the recyclable material you selected as Other.');
+                return;
+              }
+              addPickup(selected.map((material) => material === 'Other' ? `Other: ${cleanOtherMaterial}` : material));
               setSelected([]);
-              setMessage('Pickup request saved. We will collect it with your next order delivery.');
+              setOtherMaterial('');
+              navigate(cartItems.length > 0 ? '/checkout' : '/');
             }}>
               📅 Schedule Pickup ({selected.length} item{selected.length > 1 ? 's' : ''})
             </button>

@@ -5,6 +5,8 @@ export interface Order {
   id: string;
   date: string;
   items: number;
+  products?: { id: number; name: string; quantity: number; price: string }[];
+  pointsEarned?: number;
   total: string;
   status: string;
 }

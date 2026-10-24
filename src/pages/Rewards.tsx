@@ -6,8 +6,8 @@ const rewards = [
   { icon: '🎋', name: '10% Off Next Order', cost: '200 pts', desc: 'Save on your next eco-purchase.' },
   { icon: '🌱', name: 'Plant a Tree', cost: '500 pts', desc: 'We plant a tree in your name.' },
   { icon: '🎁', name: 'Free Bamboo Kit', cost: '1,000 pts', desc: 'Complete bamboo essentials set.' },
-  { icon: '🏷️', name: '₹500 Store Credit', cost: '1,500 pts', desc: 'Redeemable on any product.' },
-  { icon: '🌍', name: 'Carbon Offset', cost: '800 pts', desc: 'Offset 100kg of CO₂ emissions.' },
+  { icon: '🏷️', name: '₹300 Store Credit', cost: '900 pts', desc: 'Redeemable on any product.' },
+  { icon: '🎋', name: 'Bamboo Straw Set', cost: '800 pts', desc: 'Reusable bamboo straws for everyday drinks.' },
   { icon: '💎', name: 'VIP Membership', cost: '3,000 pts', desc: 'Exclusive deals and early access.' },
 ];
 
@@ -99,12 +99,27 @@ const Rewards = () => {
             </div>
           ))}
         </div>
-        {redeemed && (
-          <p role="status" style={{ textAlign: 'center', color: '#52b788', marginTop: '1.5rem', fontWeight: 600 }}>
-            {redeemed}
-          </p>
-        )}
       </section>
+
+      {redeemed && (
+        <div
+          onClick={() => setRedeemed(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 1200, display: 'grid', placeItems: 'center', padding: '1rem', background: 'rgba(0, 0, 0, .72)', backdropFilter: 'blur(5px)' }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reward-popup-title"
+            onClick={(event) => event.stopPropagation()}
+            style={{ width: 'min(100%, 420px)', padding: '2rem', borderRadius: '20px', textAlign: 'center', background: '#10251b', border: '1px solid rgba(82,183,136,.35)', boxShadow: '0 24px 80px rgba(0,0,0,.45)' }}
+          >
+            <div style={{ fontSize: '2.5rem', marginBottom: '.75rem' }}>{redeemed.includes('redeemed successfully') ? '🎉' : '🌿'}</div>
+            <h2 id="reward-popup-title" style={{ color: '#d4e8db', marginBottom: '.75rem' }}>{redeemed.includes('redeemed successfully') ? 'Reward claimed!' : 'Unable to claim reward'}</h2>
+            <p role="status" style={{ color: '#a5c4b5', lineHeight: 1.6, marginBottom: '1.5rem' }}>{redeemed}</p>
+            <button type="button" className="btn btn-primary" onClick={() => setRedeemed(null)}>Got it</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -45,6 +45,8 @@ const Login = () => {
                 placeholder="Enter your password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
+                minLength={8}
+                title="Password must be at least 8 characters"
                 required
               />
               <button

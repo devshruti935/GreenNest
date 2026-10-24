@@ -14,9 +14,9 @@ const Footer = () => {
         <div className="footer-links">
           <h4>Shop</h4>
           <ul>
-            <li><Link to="/shop">All Products</Link></li>
-            <li><Link to="/shop">Best Sellers</Link></li>
-            <li><Link to="/shop">New Arrivals</Link></li>
+            <li><Link to="/shop?filter=all">All Products</Link></li>
+            <li><Link to="/shop?filter=bestsellers">Best Sellers</Link></li>
+            <li><Link to="/shop?filter=new">New Arrivals</Link></li>
           </ul>
         </div>
         <div className="footer-links">
@@ -31,8 +31,6 @@ const Footer = () => {
           <ul>
             <li><a href="mailto:green-nest@gmail.com">Contact Us</a></li>
             <li><a href="tel:9563214782">Call Us: 9563214782</a></li>
-            <li><a href="#">FAQ</a></li>
-            <li><a href="#">Shipping Info</a></li>
           </ul>
         </div>
       </div>

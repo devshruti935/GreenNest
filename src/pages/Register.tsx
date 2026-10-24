@@ -76,6 +76,8 @@ const Register = () => {
                 placeholder="Create a password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
+                minLength={8}
+                title="Password must be at least 8 characters"
                 required
               />
               <button
@@ -97,6 +99,7 @@ const Register = () => {
                 <span style={{ color: strength.color, fontSize: '0.8rem' }}>{strength.label}</span>
               </div>
             )}
+            <small style={{ color: '#6b8f7e', fontSize: '0.8rem' }}>Use at least 8 characters.</small>
           </div>
 
           <div className="form-group">
@@ -107,6 +110,8 @@ const Register = () => {
               placeholder="Confirm your password"
               value={form.confirmPassword}
               onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+              minLength={8}
+              title="Password must be at least 8 characters"
               required
             />
           </div>

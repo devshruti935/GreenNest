@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import AddToCartControl from '../components/AddToCartControl';
 import { useAuth } from '../context/AuthContext';
 import coconutShellBowlSet from '../assets/coconut-shell-bowl-set.png';
@@ -244,19 +244,37 @@ export const products = [
   },
 ];
 
-const categories = ['All', ...Array.from(new Set(products.map((p) => p.category)))];
+const categories = Array.from(new Set(products.map((p) => p.category)));
 
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('recommended');
+  const [searchParams, setSearchParams] = useSearchParams();
   const { favorites, toggleFavorite } = useAuth();
+  const activeFilter = searchParams.get('filter') ?? 'all';
+  const showNewArrivals = activeFilter === 'new';
+  const showBestSellers = activeFilter === 'bestsellers';
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (activeFilter === 'all') setActiveCategory('All');
+  }, [activeFilter]);
 
   const filtered = products.filter((p) => {
     const matchCat = activeCategory === 'All' || p.category === activeCategory;
+    const matchArrival = !showNewArrivals || p.badge === 'New';
+    const matchBestSeller = !showBestSellers || p.badge === 'Best Seller';
     const matchSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.desc.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCat && matchSearch;
+    return matchCat && matchArrival && matchBestSeller && matchSearch;
+  });
+  const sortedProducts = [...filtered].sort((a, b) => {
+    if (sortBy === 'price-low') return Number(a.price.replace(/[₹,]/g, '')) - Number(b.price.replace(/[₹,]/g, ''));
+    if (sortBy === 'price-high') return Number(b.price.replace(/[₹,]/g, '')) - Number(a.price.replace(/[₹,]/g, ''));
+    if (sortBy === 'name') return a.name.localeCompare(b.name);
+    return 0;
   });
 
   return (
@@ -280,8 +298,30 @@ const Shop = () => {
             />
           </div>
 
+          <label className="sort-control">
+            <span>Sort by</span>
+            <select className="sort-select" value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
+              <option value="recommended">Recommended</option>
+              <option value="price-low">Price: low to high</option>
+              <option value="price-high">Price: high to low</option>
+              <option value="name">Name: A–Z</option>
+            </select>
+          </label>
+
           {/* Category filters */}
           <div className="category-filters">
+            <button
+              className={`filter-chip ${showBestSellers ? 'active' : ''}`}
+              onClick={() => setSearchParams({ filter: 'bestsellers' })}
+            >
+              Best Sellers
+            </button>
+            <button
+              className={`filter-chip ${showNewArrivals ? 'active' : ''}`}
+              onClick={() => setSearchParams({ filter: 'new' })}
+            >
+              New Arrivals
+            </button>
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -292,16 +332,32 @@ const Shop = () => {
               </button>
             ))}
           </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '.75rem' }}>
+            <button
+              type="button"
+              className="filter-chip"
+              onClick={() => {
+                setActiveCategory('All');
+                setSearchQuery('');
+                setSearchParams({ filter: 'all' });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            >
+              Clear all filters
+            </button>
+          </div>
         </div>
 
         {/* Results count */}
         <p style={{ color: '#6b8f7e', fontSize: '0.9rem', marginBottom: '1.5rem', textAlign: 'center' }}>
           Showing {filtered.length} product{filtered.length !== 1 ? 's' : ''}
+          {showBestSellers ? ' in Best Sellers' : ''}
+          {showNewArrivals ? ' in New Arrivals' : ''}
           {activeCategory !== 'All' ? ` in ${activeCategory}` : ''}
         </p>
 
         <div className="product-grid">
-          {filtered.map((product) => (
+          {sortedProducts.map((product) => (
             <div className="product-card" key={product.id} style={{ position: 'relative' }}>
               <Link to={`/product/${product.id}`} className="product-detail-link">
                 <div className="product-image-wrapper">

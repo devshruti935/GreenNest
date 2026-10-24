@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const { user, isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
+  const [referralCopied, setReferralCopied] = useState(false);
 
   if (!isLoggedIn || !user) {
     return (
@@ -23,11 +25,37 @@ const Profile = () => {
   }
 
   const activities = [
-    { icon: '♻️', text: 'Recycled 2.5kg of plastic bottles', points: '+125', date: 'Oct 10' },
-    { icon: '🛒', text: 'Purchased Bamboo Cutlery Kit', points: '+50', date: 'Oct 8' },
-    { icon: '⭐', text: 'Wrote a review for Coconut Bowl Set', points: '+25', date: 'Oct 5' },
-    { icon: '👥', text: 'Referred a friend — Meera joined!', points: '+200', date: 'Sep 30' },
-  ];
+    ...user.orders.map((order) => ({
+      icon: '🛒',
+      text: `Placed an order${order.products?.length ? `: ${order.products.map((product) => product.name).join(', ')}` : ''}`,
+      points: order.pointsEarned ? `+${order.pointsEarned} pts` : '',
+      date: order.date,
+    })),
+    ...user.redemptions.map((redemption) => ({
+      icon: '🎁',
+      text: `Redeemed ${redemption.name}`,
+      points: `−${redemption.points} pts`,
+      date: redemption.date,
+    })),
+    ...user.pickups.map((pickup) => ({
+      icon: '♻️',
+      text: `Recycling pickup ${pickup.status.toLowerCase()}${pickup.materials.length ? `: ${pickup.materials.join(', ')}` : ''}`,
+      points: '',
+      date: pickup.date,
+    })),
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const referralHash = Array.from(user.email.toLowerCase()).reduce((hash, char) => ((hash * 31 + char.charCodeAt(0)) >>> 0), 7);
+  const referralCode = `GN${referralHash.toString(36).toUpperCase().padStart(6, '0').slice(-6)}`;
+
+  const copyReferralCode = async () => {
+    try {
+      await navigator.clipboard.writeText(referralCode);
+      setReferralCopied(true);
+      window.setTimeout(() => setReferralCopied(false), 1800);
+    } catch {
+      setReferralCopied(false);
+    }
+  };
 
   return (
     <div className="page-enter">
@@ -60,21 +88,42 @@ const Profile = () => {
       </section>
 
       <div className="profile-grid">
+        <div className="profile-section">
+          <h3 style={{ marginBottom: '.5rem', fontSize: '1.15rem' }}>👥 Refer a Friend</h3>
+          <p style={{ color: '#8fbfa8', fontSize: '.9rem', marginBottom: '1rem' }}>Share your referral code with a friend.</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '.75rem', padding: '.85rem 1rem', border: '1px dashed rgba(82,183,136,.45)', borderRadius: '10px', background: 'rgba(82,183,136,.07)' }}>
+            <strong aria-label="Your referral code" style={{ letterSpacing: '.12em', color: '#d4e8db', fontSize: '1.15rem' }}>{referralCode}</strong>
+            <button type="button" className="btn btn-outline" onClick={copyReferralCode} style={{ padding: '.55rem .85rem', minWidth: '5.5rem' }}>
+              {referralCopied ? 'Copied!' : 'Copy code'}
+            </button>
+          </div>
+        </div>
+
         {/* Recent orders */}
         <div className="profile-section">
           <h3 style={{ marginBottom: '1rem', fontSize: '1.15rem' }}>📦 Recent Orders</h3>
           <div className="order-list">
             {user.orders.map((order) => (
-              <div className="order-item" key={order.id}>
-                <div>
-                  <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{order.id}</div>
-                  <div style={{ fontSize: '0.85rem', color: '#6b8f7e' }}>{order.date} · {order.items} items</div>
+              <details className="order-item" key={order.id} style={{ display: 'block' }}>
+                <summary style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', cursor: 'pointer', listStyle: 'none' }}>
+                  <div>
+                    <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{order.id}</div>
+                    <div style={{ fontSize: '0.85rem', color: '#6b8f7e' }}>{order.date} · {order.items} {order.items === 1 ? 'item' : 'items'} · View items</div>
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontWeight: 600, color: '#52b788' }}>{order.total}</div>
+                    <div className={`order-status ${order.status.toLowerCase()}`}>{order.status}</div>
+                  </div>
+                </summary>
+                <div style={{ marginTop: '.85rem', paddingTop: '.75rem', borderTop: '1px solid rgba(82,183,136,0.18)' }}>
+                  {order.products?.length ? order.products.map((product) => (
+                    <div key={product.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', padding: '.35rem 0', color: '#d4e8db', fontSize: '.9rem' }}>
+                      <span>{product.name} <span style={{ color: '#8fbfa8' }}>× {product.quantity}</span></span>
+                      <span style={{ whiteSpace: 'nowrap' }}>{product.price}</span>
+                    </div>
+                  )) : <p style={{ color: '#8fbfa8', fontSize: '.88rem', margin: 0 }}>Item details are unavailable for this order.</p>}
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 600, color: '#52b788' }}>{order.total}</div>
-                  <div className={`order-status ${order.status.toLowerCase()}`}>{order.status}</div>
-                </div>
-              </div>
+              </details>
             ))}
             {user.orders.length === 0 && (
               <p style={{ color: '#6b8f7e' }}>Your orders will appear here after checkout.</p>
@@ -86,16 +135,17 @@ const Profile = () => {
         <div className="profile-section">
           <h3 style={{ marginBottom: '1rem', fontSize: '1.15rem' }}>🌱 Recent Activity</h3>
           <div className="activity-list">
-            {activities.map((a, i) => (
+          {activities.map((a, i) => (
               <div className="activity-item" key={i}>
                 <span className="activity-icon">{a.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '0.9rem' }}>{a.text}</div>
                   <div style={{ fontSize: '0.8rem', color: '#6b8f7e' }}>{a.date}</div>
                 </div>
-                <span style={{ color: '#f4a261', fontWeight: 700, fontSize: '0.9rem' }}>{a.points}</span>
+                {a.points && <span style={{ color: '#f4a261', fontWeight: 700, fontSize: '0.9rem' }}>{a.points}</span>}
               </div>
             ))}
+            {activities.length === 0 && <p style={{ color: '#6b8f7e' }}>Your recent orders, rewards, and recycling activity will appear here.</p>}
           </div>
         </div>
 
