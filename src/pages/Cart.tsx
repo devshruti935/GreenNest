@@ -1,4 +1,4 @@
-import { useCart } from '../context/CartContext';
+import { MAX_QUANTITY_PER_PRODUCT, useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
@@ -39,10 +39,11 @@ const Cart = () => {
                 </div>
                 <div className="cart-item-actions">
                   <div className="quantity-control">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
+                    <button aria-label={`Remove one ${item.name}`} onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                    <button aria-label={`Add one ${item.name}`} title={item.quantity >= MAX_QUANTITY_PER_PRODUCT ? `Maximum ${MAX_QUANTITY_PER_PRODUCT} per product` : undefined} disabled={item.quantity >= MAX_QUANTITY_PER_PRODUCT} onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                   </div>
+                  {item.quantity >= MAX_QUANTITY_PER_PRODUCT && <small className="quantity-limit-note">Maximum per product</small>}
                   <button className="remove-btn" onClick={() => removeFromCart(item.id)}>
                     🗑️ Remove
                   </button>

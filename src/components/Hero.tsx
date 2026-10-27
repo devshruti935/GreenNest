@@ -1,4 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import bambooMaterialImage from '../assets/bamboo-comb.png';
+import coconutShellMaterialImage from '../assets/coconut-shell-bowl-set.png';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -61,6 +63,34 @@ const Hero = () => {
           <p>Schedule free pickups for recyclable materials right from your doorstep. We handle the rest.</p>
         </div>
       </div>
+
+      <section className="home-materials" aria-labelledby="shop-materials-heading">
+        <span className="label">Explore our collection</span>
+        <h2 id="shop-materials-heading">Shop by Material</h2>
+        <p>Choose a natural material to find products made with it.</p>
+        <div className="home-material-grid">
+          <Link className="home-material-card" to="/shop?filter=all&material=bamboo">
+            <img src={bambooMaterialImage} alt="Bamboo comb" loading="lazy" />
+            <span className="home-material-overlay" aria-hidden="true" />
+            <span className="home-material-content">
+              <span className="home-material-eyebrow">NATURAL &amp; RENEWABLE</span>
+              <span className="home-material-name">Bamboo</span>
+              <span className="home-material-description">Reusable essentials and everyday pieces</span>
+              <span className="home-material-action">Explore collection <span aria-hidden="true">→</span></span>
+            </span>
+          </Link>
+          <Link className="home-material-card" to="/shop?filter=all&material=coconut-shell">
+            <img src={coconutShellMaterialImage} alt="Coconut shell bowl set" loading="lazy" />
+            <span className="home-material-overlay" aria-hidden="true" />
+            <span className="home-material-content">
+              <span className="home-material-eyebrow">HANDCRAFTED &amp; RECLAIMED</span>
+              <span className="home-material-name">Coconut Shell</span>
+              <span className="home-material-description">Thoughtful decor and kitchen pieces</span>
+              <span className="home-material-action">Explore collection <span aria-hidden="true">→</span></span>
+            </span>
+          </Link>
+        </div>
+      </section>
     </section>
   );
 };

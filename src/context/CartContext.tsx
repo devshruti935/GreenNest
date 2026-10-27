@@ -2,6 +2,8 @@ import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 
+export const MAX_QUANTITY_PER_PRODUCT = 10;
+
 export interface CartItem {
   id: number;
   name: string;
@@ -41,15 +43,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       alert('Please log in before adding items to the cart');
       return;
     }
-    setItems(prev => {
-      const existing = prev.find(i => i.id === item.id);
-      if (existing) {
-        return prev.map(i =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-        );
-      }
-      return [...prev, { ...item, quantity: 1 }];
-    });
+    const existing = items.find(i => i.id === item.id);
+    if (existing && existing.quantity >= MAX_QUANTITY_PER_PRODUCT) {
+      alert(`You can add up to ${MAX_QUANTITY_PER_PRODUCT} of each product.`);
+      return;
+    }
+    setItems(prev => existing
+      ? prev.map(i => i.id === item.id ? { ...i, quantity: Math.min(i.quantity + 1, MAX_QUANTITY_PER_PRODUCT) } : i)
+      : [...prev, { ...item, quantity: 1 }]);
   };
 
   const removeFromCart = (id: number) => {
@@ -61,9 +62,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       removeFromCart(id);
       return;
     }
-    setItems(prev =>
-      prev.map(i => (i.id === id ? { ...i, quantity } : i))
-    );
+    const limitedQuantity = Math.min(Math.floor(quantity), MAX_QUANTITY_PER_PRODUCT);
+    if (quantity > MAX_QUANTITY_PER_PRODUCT) alert(`You can add up to ${MAX_QUANTITY_PER_PRODUCT} of each product.`);
+    setItems(prev => prev.map(i => (i.id === id ? { ...i, quantity: limitedQuantity } : i)));
   };
 
   const clearCart = () => setItems([]);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import AddToCartControl from '../components/AddToCartControl';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +17,7 @@ import naturalLoofahSpongeSet from '../assets/products/natural-loofah-sponge-set
 import recycledGlassVase from '../assets/products/recycled-glass-vase.jpg';
 import seedPaperNotebook from '../assets/products/seed-paper-notebook.jpg';
 import recycledPaperPencilSet from '../assets/products/recycled-paper-pencil-set.jpg';
+import plantablePencils from '../assets/products/plantable-pencils.png';
 import stainlessSteelWaterBottle from '../assets/products/stainless-steel-water-bottle.jpg';
 import bambooStrawSet from '../assets/products/bamboo-straw-set.png';
 import bambooSoapDish from '../assets/products/bamboo-soap-dish.png';
@@ -214,6 +215,15 @@ export const products = [
     badge: 'Recycled',
     category: 'Stationery',
   },
+  {
+    id: 27,
+    name: 'Plantable Pencils',
+    desc: 'Set of 5 wooden pencils with seed capsules at the ends. Plant the stub after use to grow herbs or flowers.',
+    price: '₹249',
+    image: plantablePencils,
+    badge: 'Plantable',
+    category: 'Stationery',
+  },
   // ── Drinkware ──
   {
     id: 17,
@@ -251,24 +261,32 @@ const Shop = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('recommended');
   const [searchParams, setSearchParams] = useSearchParams();
+  const preserveCategoryOnFilterClear = useRef(false);
   const { favorites, toggleFavorite } = useAuth();
   const activeFilter = searchParams.get('filter') ?? 'all';
+  const activeMaterial = searchParams.get('material') ?? '';
   const showNewArrivals = activeFilter === 'new';
   const showBestSellers = activeFilter === 'bestsellers';
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (activeFilter === 'all') setActiveCategory('All');
+    if (activeFilter === 'all' && !preserveCategoryOnFilterClear.current) setActiveCategory('All');
+    preserveCategoryOnFilterClear.current = false;
   }, [activeFilter]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeFilter, activeMaterial]);
+
+  const normalizedMaterial = activeMaterial.replace(/-/g, ' ');
   const filtered = products.filter((p) => {
     const matchCat = activeCategory === 'All' || p.category === activeCategory;
     const matchArrival = !showNewArrivals || p.badge === 'New';
     const matchBestSeller = !showBestSellers || p.badge === 'Best Seller';
+    const matchMaterial = !activeMaterial || `${p.name} ${p.desc}`.toLowerCase().replace(/[-–]/g, ' ').includes(normalizedMaterial);
     const matchSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.desc.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCat && matchArrival && matchBestSeller && matchSearch;
+    return matchCat && matchArrival && matchBestSeller && matchMaterial && matchSearch;
   });
   const sortedProducts = [...filtered].sort((a, b) => {
     if (sortBy === 'price-low') return Number(a.price.replace(/[₹,]/g, '')) - Number(b.price.replace(/[₹,]/g, ''));
@@ -332,6 +350,43 @@ const Shop = () => {
               </button>
             ))}
           </div>
+          {(activeCategory !== 'All' || showBestSellers || showNewArrivals || activeMaterial || searchQuery.trim()) && (
+            <div className="active-filter-list" aria-label="Active filters">
+              {activeCategory !== 'All' && (
+                <button type="button" className="active-filter-chip" onClick={() => setActiveCategory('All')} aria-label={`Remove ${activeCategory} category filter`}>
+                  {activeCategory}<span aria-hidden="true">×</span>
+                </button>
+              )}
+              {(showBestSellers || showNewArrivals) && (
+                <button
+                  type="button"
+                  className="active-filter-chip"
+                  onClick={() => {
+                    preserveCategoryOnFilterClear.current = true;
+                    setSearchParams({ filter: 'all' });
+                  }}
+                  aria-label={`Remove ${showBestSellers ? 'Best Sellers' : 'New Arrivals'} filter`}
+                >
+                  {showBestSellers ? 'Best Sellers' : 'New Arrivals'}<span aria-hidden="true">×</span>
+                </button>
+              )}
+              {activeMaterial && (
+                <button
+                  type="button"
+                  className="active-filter-chip"
+                  onClick={() => setSearchParams({ filter: activeFilter })}
+                  aria-label={`Remove ${normalizedMaterial} material filter`}
+                >
+                  Material: {normalizedMaterial}<span aria-hidden="true">×</span>
+                </button>
+              )}
+              {searchQuery.trim() && (
+                <button type="button" className="active-filter-chip" onClick={() => setSearchQuery('')} aria-label={`Clear search for ${searchQuery.trim()}`}>
+                  Search: {searchQuery.trim()}<span aria-hidden="true">×</span>
+                </button>
+              )}
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '.75rem' }}>
             <button
               type="button"
@@ -353,6 +408,7 @@ const Shop = () => {
           Showing {filtered.length} product{filtered.length !== 1 ? 's' : ''}
           {showBestSellers ? ' in Best Sellers' : ''}
           {showNewArrivals ? ' in New Arrivals' : ''}
+          {activeMaterial ? ` made with ${activeMaterial.replace(/-/g, ' ')}` : ''}
           {activeCategory !== 'All' ? ` in ${activeCategory}` : ''}
         </p>
 

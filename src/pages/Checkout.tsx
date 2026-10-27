@@ -48,6 +48,10 @@ const Checkout = () => {
   const finalTotal = Math.round(totalPrice * 0.95);
   const demoUpiIntent = `upi://pay?pa=demo%40greennest.invalid&pn=GreenNest%20Demo&am=${finalTotal}&cu=INR&tn=Demo%20order`;
 
+  const scrollToCheckoutStep = (sectionId: string) => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   useEffect(() => {
     if (orderPlaced) window.scrollTo(0, 0);
   }, [orderPlaced]);
@@ -181,7 +185,22 @@ const Checkout = () => {
         <div className="section-header">
           <span className="label">Checkout</span>
           <h2>Complete Your Order</h2>
+          <p>Enter your delivery details, choose payment, then review your order before placing it.</p>
         </div>
+
+        <nav aria-label="Checkout steps" className="checkout-stepper">
+          {[
+            { id: 'checkout-address', label: 'Address' },
+            { id: 'checkout-payment', label: 'Payment' },
+            { id: 'checkout-review', label: 'Review' },
+          ].map((step, index) => (
+            <button key={step.id} type="button" className="checkout-step" onClick={() => scrollToCheckoutStep(step.id)}>
+              <span className="checkout-step-number">{index + 1}</span>
+              <span>{step.label}</span>
+              {index < 2 && <span className="checkout-step-connector" aria-hidden="true" />}
+            </button>
+          ))}
+        </nav>
 
         <form onSubmit={handlePlaceOrder} style={{
           display: 'grid',
@@ -193,7 +212,7 @@ const Checkout = () => {
           {/* Left — Address & Payment */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {/* Delivery Address */}
-            <div style={{
+            <div id="checkout-address" style={{
               background: 'rgba(10, 30, 20, 0.6)',
               backdropFilter: 'blur(20px)',
               border: '1px solid rgba(82,183,136,0.15)',
@@ -355,7 +374,7 @@ const Checkout = () => {
             )}
 
             {/* Payment Mode */}
-            <div style={{
+            <div id="checkout-payment" style={{
               background: 'rgba(10, 30, 20, 0.6)',
               backdropFilter: 'blur(20px)',
               border: '1px solid rgba(82,183,136,0.15)',
@@ -458,7 +477,7 @@ const Checkout = () => {
           </div>
 
           {/* Right — Order Summary */}
-          <div style={{
+          <div id="checkout-review" style={{
             background: 'rgba(10, 30, 20, 0.6)',
             backdropFilter: 'blur(20px)',
             border: '1px solid rgba(82,183,136,0.15)',
@@ -490,7 +509,7 @@ const Checkout = () => {
                       <p style={{ color: '#6b8f7e', fontSize: '0.75rem' }}>Qty: {item.quantity}</p>
                     </div>
                   </div>
-                  <span style={{ color: '#d4e8db', fontSize: '0.9rem', fontWeight: 600 }}>{item.price}</span>
+                  <span style={{ color: '#d4e8db', fontSize: '0.9rem', fontWeight: 600 }}>₹{(Number(item.price.replace(/[₹,]/g, '')) * item.quantity).toLocaleString()}</span>
                 </div>
               ))}
             </div>
