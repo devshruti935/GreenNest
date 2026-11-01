@@ -510,11 +510,28 @@ img {
 }
 
 .product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
   transition: var(--transition);
+}
+
+.product-card > .product-detail-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.product-card > .product-detail-link .product-info {
+  flex: 1;
+}
+
+.product-card > .product-bottom {
+  margin-top: auto;
 }
 
 .product-card:hover {
