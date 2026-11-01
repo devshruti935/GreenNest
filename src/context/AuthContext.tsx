@@ -45,6 +45,7 @@ interface AuthContextType {
   addPoints: (points: number) => void;
   redeemPoints: (name: string, points: number) => void;
   addOrder: (order: Order) => void;
+  cancelOrder: (orderId: string) => void;
   addPickup: (materials: string[]) => void;
   attachPendingPickups: (orderId: string) => void;
   toggleFavorite: (productId: number) => void;
@@ -104,6 +105,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       : currentUser);
   };
 
+  const cancelOrder = (orderId: string) => {
+    setUser((currentUser) => {
+      if (!currentUser) return currentUser;
+      const order = currentUser.orders.find((item) => item.id === orderId);
+      if (!order || order.status.toLowerCase() !== 'processing') return currentUser;
+
+      return {
+        ...currentUser,
+        points: Math.max(0, currentUser.points - (order.pointsEarned ?? 0)),
+        orders: currentUser.orders.map((item) => item.id === orderId ? { ...item, status: 'Cancelled' } : item),
+        pickups: currentUser.pickups.map((pickup) => {
+          if (pickup.orderId !== orderId) return pickup;
+          const { orderId: pickupOrderId, ...unlinkedPickup } = pickup;
+          return pickupOrderId === orderId
+            ? { ...unlinkedPickup, status: 'Awaiting next order delivery' }
+            : pickup;
+        }),
+      };
+    });
+  };
+
   const addPickup = (materials: string[]) => {
     setUser((currentUser) => currentUser
       ? {
@@ -136,7 +158,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, favorites, login, register, addPoints, redeemPoints, addOrder, addPickup, attachPendingPickups, toggleFavorite, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, favorites, login, register, addPoints, redeemPoints, addOrder, cancelOrder, addPickup, attachPendingPickups, toggleFavorite, logout }}>
       {children}
     </AuthContext.Provider>
   );

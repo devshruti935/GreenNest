@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
-  const { user, isLoggedIn, logout } = useAuth();
+  const { user, isLoggedIn, logout, cancelOrder } = useAuth();
   const navigate = useNavigate();
   const [referralCopied, setReferralCopied] = useState(false);
 
@@ -26,9 +26,11 @@ const Profile = () => {
 
   const activities = [
     ...user.orders.map((order) => ({
-      icon: '🛒',
-      text: `Placed an order${order.products?.length ? `: ${order.products.map((product) => product.name).join(', ')}` : ''}`,
-      points: order.pointsEarned ? `+${order.pointsEarned} pts` : '',
+      icon: order.status === 'Cancelled' ? '↩️' : '🛒',
+      text: order.status === 'Cancelled'
+        ? `Cancelled order${order.products?.length ? `: ${order.products.map((product) => product.name).join(', ')}` : ''}`
+        : `Placed an order${order.products?.length ? `: ${order.products.map((product) => product.name).join(', ')}` : ''}`,
+      points: order.status !== 'Cancelled' && order.pointsEarned ? `+${order.pointsEarned} pts` : '',
       date: order.date,
     })),
     ...user.redemptions.map((redemption) => ({
@@ -54,6 +56,12 @@ const Profile = () => {
       window.setTimeout(() => setReferralCopied(false), 1800);
     } catch {
       setReferralCopied(false);
+    }
+  };
+
+  const handleCancelOrder = (orderId: string) => {
+    if (window.confirm('Cancel this order? Its unspent GreenPoints will be removed.')) {
+      cancelOrder(orderId);
     }
   };
 
@@ -104,26 +112,36 @@ const Profile = () => {
           <h3 style={{ marginBottom: '1rem', fontSize: '1.15rem' }}>📦 Recent Orders</h3>
           <div className="order-list">
             {user.orders.map((order) => (
-              <details className="order-item" key={order.id} style={{ display: 'block' }}>
-                <summary style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', cursor: 'pointer', listStyle: 'none' }}>
-                  <div>
-                    <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{order.id}</div>
-                    <div style={{ fontSize: '0.85rem', color: '#6b8f7e' }}>{order.date} · {order.items} {order.items === 1 ? 'item' : 'items'} · View items</div>
-                  </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontWeight: 600, color: '#52b788' }}>{order.total}</div>
-                    <div className={`order-status ${order.status.toLowerCase()}`}>{order.status}</div>
-                  </div>
-                </summary>
-                <div style={{ marginTop: '.85rem', paddingTop: '.75rem', borderTop: '1px solid rgba(82,183,136,0.18)' }}>
-                  {order.products?.length ? order.products.map((product) => (
-                    <div key={product.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', padding: '.35rem 0', color: '#d4e8db', fontSize: '.9rem' }}>
-                      <span>{product.name} <span style={{ color: '#8fbfa8' }}>× {product.quantity}</span></span>
-                      <span style={{ whiteSpace: 'nowrap' }}>{product.price}</span>
+              <div className="order-item" key={order.id} style={{ display: 'block' }}>
+                <details>
+                  <summary style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', cursor: 'pointer', listStyle: 'none' }}>
+                    <div>
+                      <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{order.id}</div>
+                      <div style={{ fontSize: '0.85rem', color: '#6b8f7e' }}>{order.date} · {order.items} {order.items === 1 ? 'item' : 'items'} · View items</div>
                     </div>
-                  )) : <p style={{ color: '#8fbfa8', fontSize: '.88rem', margin: 0 }}>Item details are unavailable for this order.</p>}
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontWeight: 600, color: '#52b788' }}>{order.total}</div>
+                      <div className={`order-status ${order.status.toLowerCase()}`}>{order.status}</div>
+                    </div>
+                  </summary>
+                  <div style={{ marginTop: '.85rem', paddingTop: '.75rem', borderTop: '1px solid rgba(82,183,136,0.18)' }}>
+                    {order.products?.length ? order.products.map((product) => (
+                      <div key={product.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', padding: '.35rem 0', color: '#d4e8db', fontSize: '.9rem' }}>
+                        <span>{product.name} <span style={{ color: '#8fbfa8' }}>× {product.quantity}</span></span>
+                        <span style={{ whiteSpace: 'nowrap' }}>{product.price}</span>
+                      </div>
+                    )) : <p style={{ color: '#8fbfa8', fontSize: '.88rem', margin: 0 }}>Item details are unavailable for this order.</p>}
+                  </div>
+                </details>
+                <div className="order-actions">
+                  <Link className="btn btn-outline tracking-order-link" to={`/track/${order.id}`}>Track Order</Link>
+                  {order.status === 'Processing' && (
+                    <button className="btn btn-outline order-cancel-button" type="button" onClick={() => handleCancelOrder(order.id)}>
+                      Cancel Order
+                    </button>
+                  )}
                 </div>
-              </details>
+              </div>
             ))}
             {user.orders.length === 0 && (
               <p style={{ color: '#6b8f7e' }}>Your orders will appear here after checkout.</p>

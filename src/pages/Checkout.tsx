@@ -156,7 +156,10 @@ const Checkout = () => {
                 ♻️ Your recycling items are scheduled to be picked up with this order's delivery.
               </p>
             )}
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
+              <button onClick={() => navigate(`/track/${orderId}`)} className="btn btn-outline">
+                Track Order
+              </button>
               <button onClick={() => navigate('/shop')} className="btn btn-primary">
                 Continue Shopping
               </button>

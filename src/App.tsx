@@ -14,6 +14,7 @@ import Checkout from "./pages/Checkout";
 import Profile from "./pages/Profile";
 import ProductDetails from "./pages/ProductDetails";
 import Favorites from "./pages/Favorites";
+import OrderTracking from "./pages/OrderTracking";
 import ScrollToTop from "./components/ScrollToTop";
 import "./index.css";
 import "./App.css";
@@ -36,6 +37,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/track/:id" element={<OrderTracking />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
